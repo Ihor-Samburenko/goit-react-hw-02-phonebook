@@ -1,8 +1,11 @@
 import { Component } from 'react';
-import { nanoid } from 'nanoid';
 
 import ContactsBlock from 'components/ContactsBlock/ContactsBlock';
+import PhoneBookList from 'components/PhonebookList/PhoneBookList';
+import PhonebookForm from 'components/PhonebookForm/PhonebookForm';
+
 import css from '../Phonebook/Phonebook.module.css';
+import { nanoid } from 'nanoid';
 
 class Phonebook extends Component {
   state = {
@@ -12,39 +15,55 @@ class Phonebook extends Component {
       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
-    number: '',
-    name: '',
+
     filter: '',
   };
 
-  handleChange = ({ target }) => {
-    // console.log(target);
-
-    const { name, value } = target; //e.target
-    // console.log(name);
-    // console.log(value);
-
-    this.setState({
-      [name]: value,
+  onDelete = id => {
+    this.setState(prevState => {
+      return {
+        contacts: prevState.contacts.filter(contact => contact.id !== id),
+      };
     });
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  // беремо зі стейту пусті значення ней і намбер і ресетимо поля, в інпут додаємо атрибут велью зі значеннями нейм і намбер
+
+  getFilter() {
+    const { filter, contacts } = this.state;
+
+    const normalazedFilter = filter.toLowerCase();
+
+    return contacts.filter(({ name }) =>
+      name.toLowerCase().includes(normalazedFilter)
+    );
+  }
+
+  handleFilterChange = e => {
+    this.setState({ filter: e.target.value });
+  };
+
+  isDublicate({ name, number }) {
+    const { contacts } = this.state;
+    const normalizedName = name.toLowerCase();
+    const dublicate = contacts.find(contact => {
+      return (
+        contact.name.toLowerCase() === normalizedName &&
+        contact.number === number
+      );
+    });
+
+    return Boolean(dublicate);
+  }
+
+  addContact = ({ name, number }) => {
+    if (this.isDublicate({ name, number })) {
+      return alert(`${name} is already exist`);
+    }
 
     this.setState(prevState => {
-      const { name, number, contacts } = prevState;
+      const { contacts } = prevState;
       // Значення стейту на момент виклику превстейту, що ввели в форму і всі попередні контакти
-
-      const normalizedName = name.toLowerCase();
-      const isDublicate = contacts.find(
-        contact =>
-          contact.name.toLowerCase() === normalizedName &&
-          contact.number === number
-      );
-      if (isDublicate) {
-        return alert(`${name} is already in contact`);
-      }
 
       const newContact = {
         id: nanoid(),
@@ -56,95 +75,28 @@ class Phonebook extends Component {
 
       // повертає об'єкт в якому є список старих контактів і в кінець додаємо новий
     });
-    this.reset();
   };
 
-  onDelete(id) {
-    this.setState(prevState => {
-      return {
-        contacts: prevState.contacts.filter(contact => contact.id !== id),
-      };
-    });
-  }
-
-  reset() {
-    this.setState({ name: '', number: '' });
-  }
-
-  // беремо зі стейту пусті значення ней і намбер і ресетимо поля, в інпут додаємо атрибут велью зі значеннями нейм і намбер
-
-  getFilter() {
-    const { filter, contacts } = this.state;
-    const normalazedFilter = filter.toLowerCase();
-    const result = contacts.filter(({ name }) => {
-      return name.toLowerCase().includes(normalazedFilter);
-    });
-
-    return result;
-  }
-
   render() {
-    const { number, name } = this.state;
-
     // console.log(contacts);
 
     const contacts = this.getFilter();
-
-    const elements = contacts.map(({ id, name, number }) => (
-      <li className={css.item} key={id}>
-        {name}: {number}
-        <button onClick={() => this.onDelete(id)} className={css.btn}>
-          Delete
-        </button>
-      </li>
-    ));
 
     return (
       <div className={css.wrapper}>
         <h2 className={css.title}>Phonebook</h2>
         <div className={css.block}>
-          <ContactsBlock title="Phonebook">
-            <form onSubmit={this.handleSubmit} className={css.form}>
-              <div className={css.formGroup}>
-                <label htmlFor="">Name</label>
-                <input
-                  value={name}
-                  onChange={this.handleChange}
-                  placeholder="Contact name"
-                  type="text"
-                  name="name"
-                  pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-                  title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-                  required
-                />
-              </div>
-              <div className={css.formGroup}>
-                <label htmlFor="">Number</label>
-                <input
-                  value={number}
-                  onChange={this.handleChange}
-                  placeholder="Phone number"
-                  type="tel"
-                  name="number"
-                  pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-                  title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-                  required
-                />
-                <button className={css.btn} type="submit">
-                  Add contact
-                </button>
-              </div>
-            </form>
-          </ContactsBlock>
-
+          <ContactsBlock title="Phonebook"></ContactsBlock>
+          <PhonebookForm onSubmit={this.addContact} />
           <ContactsBlock title="Contacts">
             <input
-              name="filter"
-              onChange={this.handleChange}
+              value={this.state.filter}
+              onChange={this.handleFilterChange}
               className={css.input}
               placeholder="Find contact"
             />
-            <ul className={css.list}>{elements}</ul>
+
+            <PhoneBookList contacts={contacts} onDelete={this.onDelete} />
           </ContactsBlock>
         </div>
       </div>
