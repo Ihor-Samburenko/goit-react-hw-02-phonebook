@@ -1,4 +1,5 @@
 import css from '../ContactsBlock/ContactsBlock.module.css';
+import PropTypes from 'prop-types';
 
 const ContactsBlock = ({ title, children }) => {
   return (
@@ -10,3 +11,8 @@ const ContactsBlock = ({ title, children }) => {
 };
 
 export default ContactsBlock;
+
+ContactsBlock.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.element.isRequired,
+};

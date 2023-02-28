@@ -78,8 +78,6 @@ class Phonebook extends Component {
   };
 
   render() {
-    // console.log(contacts);
-
     const contacts = this.getFilter();
 
     return (

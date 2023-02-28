@@ -1,5 +1,7 @@
 import css from '../Phonebook/Phonebook.module.css';
 
+import PropTypes from 'prop-types';
+
 const PhoneBookList = ({ contacts, onDelete }) => {
   const elements = contacts.map(({ id, name, number }) => (
     <li className={css.item} key={id}>
@@ -14,3 +16,14 @@ const PhoneBookList = ({ contacts, onDelete }) => {
 };
 
 export default PhoneBookList;
+
+PhoneBookList.propTypes = {
+  contacts: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.number.isRequired,
+      number: PropTypes.number.isRequired,
+    })
+  ),
+  onDelete: PropTypes.func.isRequired,
+};
