@@ -20,9 +20,9 @@ export default PhoneBookList;
 PhoneBookList.propTypes = {
   contacts: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.number.isRequired,
-      number: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      number: PropTypes.string.isRequired,
     })
   ),
   onDelete: PropTypes.func.isRequired,

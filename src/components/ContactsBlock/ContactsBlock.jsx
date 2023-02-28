@@ -14,5 +14,5 @@ export default ContactsBlock;
 
 ContactsBlock.propTypes = {
   title: PropTypes.string.isRequired,
-  children: PropTypes.element.isRequired,
+  children: PropTypes.array,
 };
